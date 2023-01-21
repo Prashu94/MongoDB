@@ -1,0 +1,41 @@
+// insertOne Example
+use('sample_training');
+db.employees.insertOne({
+    "empId": 1,
+    "empName": "John",
+    "salary": 300000,
+    "department": "DX" 
+});
+
+// insertMany Example
+use('sample_training');
+db.employees.insertMany([
+    {"empId": 2, "empName":"Jack", "salary": 340000, "department": "ETA"},
+    {"empId": 3, "empName": "Jill", "salary": 350000, 
+    "department": "IVS"}
+]);
+
+use('sample_training');
+db.employees.find({});
+
+// Exercises
+/**
+1. Write a query to insert a single product as mentioned below into the Products collection */
+use('sample_training');
+db.products.insert({
+    "productId": 1001,
+    "productName": "iPhone 11 Pro",
+    "productCategory": "Smartphones",
+    "colors": ["silver", "black", "gold"],
+    "productAvailability": 24
+});
+
+use('sample_training');
+db.products.insertMany([
+    {"productId":1002 , "productName": "Sony Bravia R202F", "productCategory": "Televisions", "size": ["32inch", "40inch", "55inch"], "productAvailability": 16},
+    {"productId":1003 , "productName": " Self Design Men Round Neck Maroon T-Shirt", "productCategory": "Clothing", "fabric": "Cotton", "sleeve": "Full Sleeve", "productAvailability": 32},
+    {"productId": 1004, "productName": "FLOWER Digital Reprint Painting", "productCategory": "Home Decor", "dimensions":"24 inch x 17 inch" , "frameColor":"black" , "productAvailability": 8}
+]);
+
+use('sample_training');
+db.products.find({});
