@@ -1,0 +1,48 @@
+use("sample_db");
+// Insert a single document
+db.inventory.insert({
+    item: "canvas", qty: 100, tags: ["cotton"], size: { h: 28, w: 35.5, uom: "cm" }
+});
+
+// Insert Multiple documents
+use('sample_db');
+db.inventory.insertMany([
+   { item: "journal", qty: 25, tags: ["blank", "red"], size: { h: 14, w: 21, uom: "cm" } },
+   { item: "mat", qty: 85, tags: ["gray"], size: { h: 27.9, w: 35.5, uom: "cm" } },
+   { item: "mousepad", qty: 25, tags: ["gel", "blue"], size: { h: 19, w: 22.85, uom: "cm" } }
+]);
+
+// Find all the documents
+use('sample_db');
+db.inventory.find({});
+
+/**
+Insert Behaviour
+1. _id field
+- Each document stored in a collection requires an unique _id field that acts as a primary key. If an inserted document omits the _id field, the mongo db driver automatically generates an ObjectId for the _id field. */
+
+use('sample_db');
+db.inventory.drop();
+
+use('sample_db');
+db.inventory.insertMany([
+   { item: "journal", qty: 25, size: { h: 14, w: 21, uom: "cm" }, status: "A" },
+   { item: "notebook", qty: 50, size: { h: 8.5, w: 11, uom: "in" }, status: "A" },
+   { item: "paper", qty: 100, size: { h: 8.5, w: 11, uom: "in" }, status: "D" },
+   { item: "planner", qty: 75, size: { h: 22.85, w: 30, uom: "cm" }, status: "D" },
+   { item: "postcard", qty: 45, size: { h: 10, w: 15.25, uom: "cm" }, status: "A" }
+]);
+
+// Query Documents
+// Select all the documents in the collection
+use('sample_db');
+db.inventory.find({});
+
+// Specify equality condition
+// 1. Select the documents from the inventory collection where the status is 'D'
+use('sample_db');
+db.inventory.find({status: 'D'});
+
+// Specify condition using query operators
+use('sample_db');
+db.inventory.find({status: {$in: ['A', 'D']}});
