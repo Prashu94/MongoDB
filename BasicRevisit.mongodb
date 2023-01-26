@@ -824,3 +824,30 @@ db.products.find(
         "productSellers": "SuperComNet"
     }
 );
+
+// 5. Write a query to fetch price of iphone 11 pro with specifications:-  any variant of green color and 128GB hard disk.
+use('exercise_db');
+db.products.find({
+    "productName": "iPhone 11 pro",
+    "productPrice": {
+        "$elemMatch": {
+            "color": {$regex: /.*green.*/, "$options": "i"}
+        }
+    }
+}, {"productPrice.priceArray.128GB.price.$":1,"_id": 0});
+
+// 6.  Write a query to display all the mobiles available with 32 GB Hard Disk in any color
+use('exercise_db');
+db.products.find({
+    "productCategory.sub": "mobiles",
+    "productPrice.priceArray.32GB": {$exists: true}
+});
+
+// 7. Write a query to fetch all the products under mobiles category . Perform case insensitive search.
+use('exercise_db');
+db.products.find({
+    "productCategory.sub": {$regex: /.*mobiles.*/, $options: "i"}
+});
+// 8. Write a query to fetch all the products under mobiles and Air Conditioners category. perform case insensitive search.
+
+//9 . Write a query to fetch the price and availability of 6 seater wooden RoyalOak Rover Dining Set 
