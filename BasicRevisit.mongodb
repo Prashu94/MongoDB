@@ -849,5 +849,293 @@ db.products.find({
     "productCategory.sub": {$regex: /.*mobiles.*/, $options: "i"}
 });
 // 8. Write a query to fetch all the products under mobiles and Air Conditioners category. perform case insensitive search.
-
+use('exercise_db');
+db.products.find({
+    "productCategory.sub": {
+            $in : [/.*mobiles.*/i, /.*air.*/i]
+    }
+});
 //9 . Write a query to fetch the price and availability of 6 seater wooden RoyalOak Rover Dining Set 
+use('exercise_db');
+db.products.find({
+    "productName": "RoyalOak Rover Dining Set",
+    "productPrice.wood.6seater": {$exists: true} 
+}, {_id: 0, "productName": 1, "productPrice.wood.6seater.$":1});
+
+//10.  Write a query to identify all the products sold by the seller SMHOMEGALLERY
+use('exercise_db');
+db.products.find({
+    "productSellers": "SMHOMEGALLERY"
+});
+
+
+
+// Update queries
+use('sample_training');
+db.employees.find({});
+
+// UpdateOne
+// Update the salary of empId 6 to 42000
+use('sample_training');
+db.employees.updateOne(
+    {"empId": 6},
+    {$set: {"salary": 42000}}
+);
+
+use('sample_training');
+db.employees.find({"empId": 6});
+
+// UpdateMany
+// Update the salary of department ETA to 41000
+use('sample_training');
+db.employees.find({"department": "ETA"
+});
+
+use('sample_training');
+db.employees.updateMany(
+    {"department": "ETA"},
+    {"$set": {"salary": 41000}}
+);
+
+// Update
+// Update salary of empId 6 to 42000 (using update as updateOne)
+use('sample_training');
+db.employees.find({"empId": 6});
+
+use('sample_training');
+db.employees.update(
+    {"empId": 6},
+    {"$set": {"salary": 42000}}
+);
+
+// Update the salary of all employees from ETA Department to 41000(using update as updateMany)
+use('sample_training');
+db.employee.update({“department”:"ETA"}, {$set: {salary:40000}},{$multi:true});
+
+/*
+Field Update Operator:
+$set, $inc, $mul, $max, $min, $unset
+$set - Sets the value of a field document
+$inc - Increments the value of the field by a specified amount
+$mul - Multiplies the value of the field by the specified amount
+$max - Only updates the field if the specified value is less than the existing field value.
+$min - Only updates the field if the specified value is greater than the existing field value.
+$unset - Removes the specified field of a document.
+*/
+// Example 1: To increase the salary of all employees from ETA department by 2000
+use('sample_training');
+db.employees.updateMany(
+    {"department": "ETA"},
+    {"$inc": {"salary": 2000}}
+);
+
+// Find the updated records
+use('sample_training');
+db.employees.find({
+    "department": "ETA"
+});
+
+
+// Example 2: To decrease the salary of all employees from ETA department by 2000
+use('sample_training');
+db.employees.updateMany(
+    {"department": "ETA"},
+    {"$inc": {"salary": -2000}}
+);
+
+// Find the updated records
+use('sample_training');
+db.employees.find({"department": "ETA"});
+
+// Example 3: To increase the salary of all employees from ETA department by 10%
+use('sample_training');
+db.employees.updateMany(
+    {"department": "ETA"},
+    {"$mul": {"salary": 1.1}}
+);
+
+// Find all the updated records
+use('sample_training');
+db.employees.find({"department":"ETA"});
+
+// Example 4: To decrease the salary of all employees from ETA department by 10%
+use('sample_training');
+db.employees.updateMany(
+    {"department": "ETA"},
+    {"$mul": {"salary": 0.9}}
+);
+
+// Find all the updated records
+use('sample_training');
+db.employees.find({"department": "ETA"});
+
+// Example 5: To set the salary as 30000 if the current salary is less than 30000
+// Find all the employees less than 30000
+use('sample_training');
+db.employees.find(
+    {"salary": {"$lte": 30000}}
+);
+// 2 records updated
+use('sample_training');
+db.employees.updateMany(
+    {},
+    {"$max": {"salary": 30000}}
+);
+
+// Example 6: To set the salary as 50000 if the current salary of the employee is greater than 50000
+// Find all the employees greater than 50000
+use('sample_training');
+db.employees.find(
+    {"salary": {"$gte": 50000}}
+);
+// 2 records updated
+use('sample_training');
+db.employees.updateMany(
+    {},
+    {"$min": {"salary": 50000}}
+);
+
+// Example 7: To remove selected fields from a document i.e. Remove department and machineId fields for empId 1
+use('sample_training');
+db.employees.updateOne(
+    {"empId": 1},
+    {"$unset": {
+        "department": "",
+        "machineId": ""
+    }}
+);
+
+/*
+upsert: true
+Adds a new field if there is no existing fields in the collection    
+*/
+// Example: Update the salary of all the employees in department A to 40000. If no employee found for update, add a new record.
+use('sample_training');
+db.employees.updateMany({"department": "A"}, {$set: {"salary":40000}},{upsert: true});
+// Earlier -No Records, After update records addedd
+use('sample_training');
+db.employees.find({"department": "A"});
+
+
+/*
+Array Update Operators
+$push - It is used to add new values inside an array. It does not check whether the value is already present inside 
+the array and adds duplicate values also
+$addToSet - It is used to add new values inside an array but unlike $push it does not add duplicate values into the array
+$each - Operator is used along with $push and $addToSet operators to add multiple values to an array field. When used with $addToSet, it will not
+add duplicate values.
+$position - Using $push, $addToSet and $each we can add the values only at the last index of existing array. $position operator helps 
+us to add the values at our desired index in the array.
+$pull - used to remove a single value from an array field.
+$pullAll - used to remove multiple values from an array field.
+$pop - used to remove one element at a time from the array field either from first and last position(-1|1)
+*/
+// Example 1 - Add Role Senior Systems Engineer and roleExperience 0.1 into an experience array for empId: 14
+use('sample_training');
+db.employees.find({"empId": 13});
+
+use('sample_training');
+db.employees.updateOne(
+    {"empId": 14},
+    {
+        "$push": {
+            "experience": {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 0.1
+            }
+        }
+    }
+);
+
+// Example 2: Add role Senior Systems Engineer and roleExperience 0.1 into an experience array for empId 14 only if it is 
+// already not added.
+// Here below query does not add anything.
+use('sample_training');
+db.employees.updateOne(
+    {"empId": 14},
+    {
+        "$addToSet": {
+            "experience": {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 0.1
+            }
+        }
+    }
+);
+
+// Example 3: Add 2 roles Technology Analyst (1.2 years) and Technology Lead(1.0 year) for empId 14
+use('sample_training');
+db.employees.updateOne(
+    {"empId": 14},
+    {
+        "$push": {
+            "experience": {
+                "$each": [
+                    {
+                        "role": "Technology Analyst",
+                        "roleExperience": 1.2
+                    },
+                    {
+                        "role": "Technology Lead",
+                        "roleExperience": 1.0
+                    }
+                ]
+            }
+        }
+    }
+);
+
+// Example 4: Add the role Systems Engineer Trainee with roleExperience 0.4 years at index 0 for empId 14
+use('sample_training');
+db.employees.update(
+    {"empId": 14},
+    {"$push": {
+        "experience": {
+            "$each": [
+                {
+                    "role": "Systems Engineer Trainee",
+                    "roleExperience": 0.4
+                }
+            ],
+            "$position": 0
+        }
+    }}
+);
+
+// Example 5: Remove the role Systems Engineer Trainee with roleExperience 0.4 years for empId 14
+use('sample_training');
+db.employees.updateOne(
+    {"empId": 14},
+    {"$pull": {
+        "experience": {
+            "role": "Systems Engineer Trainee",
+            "roleExperience": 0.4
+        }
+    }}
+);
+
+// Example 6: Remove the roles System Engineer (1.7 years) and Senior Systems Engineer(1.8 years) for empId 13
+use('sample_training');
+db.employees.updateOne(
+    {"empId": 13},
+    {
+        "$pullAll": {
+            "experience": [
+                {
+                    "role": "Systems Engineer",
+                    "roleExperience": 1.7
+                },
+                {
+                    "role": "Senior Systems Engineer",
+                    "roleExperience": 1.8
+                }
+            ]
+        }
+    }
+);
+
+//Example: Remove System Engineers Role of empId 1
+use('sample_training');
+db.employees.updateOne({empId: 1}, {$pop: {$experience: -1}});
+use('sample_training');
+db.employees.updateOne( {empId:1}, {$pop:{experience: 1}} );
