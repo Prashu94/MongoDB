@@ -480,4 +480,16 @@ db.employees.updateOne(
 use('sample_training');
 db.employees.updateOne({empId: 1}, {$pop: {$experience: -1}});
 use('sample_training');
-db.employees.updateOne( {empId:1}, {$pop:{experience: 1}} )
+db.employees.updateOne( {empId:1}, {$pop:{experience: 1}} );
+
+// Delete Operators
+/*
+- deleteOne() - deletes only one document
+- deleteMany() - deletes multiple documents
+*/
+// Example: Delete the details of employee with employee id = 4
+use('sample_training');
+db.employees.deleteOne({empId: 4});
+// Example: Delete the details of the employee where department is ETA
+use('sample_training');
+db.employees.deleteMany({"department": "ETA"});
