@@ -1,1 +1,352 @@
-db.products.find({"operatingSystem.OSName": "Windows 10 Home"});
+/** Aggregation 
+- stages
+- expression
+- accumulators
+-> $match -> $group -> $sort -> $limit
+
+Aggregation Operators
+- Stage operator syntax:
+{$<stageName>: expression} 
+Examples:
+{$match: {empId: 101}}
+{$group: {_id: "$department"}} - grouping the data as per department field(Aggregation Expressions)
+{$match: {_id: "$department", "count": {$sum: 1}}} - $sum (accumulators)
+*/
+//db.employees.drop();
+// Insert new data for freshness
+db.employees.insertMany([
+  {
+    empId: 1,
+    empName: "John",
+    salary: 40000,
+    department: "ETA",
+    machineId: 1001,
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.7,
+      },
+      {
+        role: "Senior Systems Engineer",
+        roleExperience: 1.8,
+      },
+      {
+        role: "Technology Analyst",
+        roleExperience: 1.3,
+      }
+    ]
+  },
+  {
+    empId: 2,
+    empName: "Maria",
+    salary: 45000,
+    department: "IVS",
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.7,
+      },
+      {
+        role: "Senior Systems Engineer",
+        roleExperience: 1.6,
+      },
+      {
+        role: "Technology Analyst",
+        roleExperience: 1.1,
+      }
+    ]
+  },
+
+  {
+    empId: 3,
+    empName: "jack",
+    salary: 43000,
+    department: "ECSADM",
+    machineId: 1002,
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.7,
+      },
+      {
+        role: "Senior Systems Engineer",
+        roleExperience: 1.3,
+      },
+      {
+        role: "Technology Analyst",
+        roleExperience: 0.6,
+      }
+    ]
+  },
+
+  {
+    empId: 4,
+    empName: "Emily",
+    salary: 31000,
+    department: "DX",
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.7,
+      },
+      {
+        role: "Senior Systems Engineer",
+        roleExperience: 0.3,
+      }
+    ]
+  },
+  {
+    empId: 5,
+    empName: "Steve",
+    salary: 51000,
+    department: "SGTSES",
+    machineId: 1003,
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.7,
+      },
+      {
+        role: "Senior Systems Engineer",
+        roleExperience: 1.3,
+      },
+      {
+        role: "Technology Analyst",
+        roleExperience: 2.6,
+      },
+      {
+        role: "Technology Lead",
+        roleExperience: 0.4,
+      }
+    ]
+  },
+  {
+    empId: 6,
+    empName: "Stephen",
+    salary: 25000,
+    department: "DXEMP",
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.0,
+      }
+    ]
+  },
+  {
+    empId: 7,
+    empName: "Kieron",
+    salary: 35000,
+    department: "IND",
+    machineId: 1004,
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.7,
+      },
+      {
+        role: "Senior Systems Engineer",
+        roleExperience: 0.8,
+      }
+    ]
+  },
+  {
+    empId: 8,
+    empName: "Kyle",
+    salary: 29000,
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.3,
+      }
+    ]
+  },
+  {
+    empId: 9,
+    empName: "Charles",
+    salary: 49000,
+    machineId: 1005,
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.7,
+      },
+      {
+        role: "Senior Systems Engineer",
+        roleExperience: 1.6,
+      },
+      {
+        role: "Technology Analyst",
+        roleExperience: 1.3,
+      }
+    ]
+  },
+  {
+    empId: 10,
+    empName: "Robin",
+    salary: 37000,
+    department: "DXEMP",
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.7,
+      },
+      {
+        role: "Senior Systems Engineer",
+        roleExperience: 1.2,
+      }
+    ]
+  },
+  {
+    empId: 11,
+    empName: "Tom",
+    salary: 54000,
+    department: "IND",
+    machineId: 1006,
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.7,
+      },
+      {
+        role: "Senior Systems Engineer",
+        roleExperience: 1.6,
+      },
+      {
+        role: "Technology Analyst",
+        roleExperience: 1.7,
+      },
+      {
+        role: "Technology Lead",
+        roleExperience: 1.5,
+      }
+    ]
+  },
+  {
+    empId: 12,
+    empName: "Mark",
+    salary: 28000,
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.2,
+      }
+    ]
+  },
+  {
+    empId: 13,
+    empName: "Mike",
+    salary: 39000,
+    machineId: 1007,
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 1.7,
+      },
+      {
+        role: "Senior Systems Engineer",
+        roleExperience: 1.8,
+      },
+      {
+        role: "Technology Analyst",
+        roleExperience: 0.3,
+      }
+    ]
+  },
+  {
+    empId: 14,
+    empName: "Chris",
+    salary: 23000,
+    department: "ETA",
+    machineId: 1008,
+    experience: [
+      {
+        role: "Systems Engineer",
+        roleExperience: 0.5,
+      }
+    ]
+  }
+]);
+
+// Single purpose Aggregate function- countDocuments()
+/**
+- Counts the number of documents based on matching condition
+- Examples: 
+1. Fetch the total number of documents in the employees collection.
+2. Fetch the total number of documents in the ETA 
+department
+3. Exclude the first document while counting and maximum 2 documents should be counted.(options: skip/limit with countDocuments method)
+ */
+db.employees.countDocuments({});
+
+db.employees.countDocuments({ department: "ETA" });
+// Skips the first document and limits the result set to 2 documents
+db.employees.countDocuments({}, { skip: 1, limit: 2 });
+
+// Single purpose Aggregate Function - distinct()
+/**
+- Fetch the unique values for a given field in the collection 
+- Example: 
+1. Fetch all the unique departments from the employees collection
+2. Fetch all the unique roles in which the employees work*/
+db.employees.distinct("department");
+
+db.employees.distinct("experience.role");
+
+/**
+Stage Operators:
+1. $match:
+- Aggregate method allows us to filter documents by using $match operator.
+- Examples:
+i. Fetch all the employees who belong to any department.
+2. $project:
+- Aggregate method allows us to select specific field to be displayed from the collection.
+Examples:
+i. Fetch all the empName where an employee belongs to any department
+3. $group:
+- Groups the documents based on one or more fields
+- Group by experssion is specified using _id field.
+- Accumulators are used to include computed results.
+- Syntax:
+{
+    $group: {
+        _id: <experssion>, // Group By Experssion
+        <field1>: {<accumulator1>:<expression1>},
+    }
+}
+- Examples:
+i. Group all the employees as per department
+ii. Don't include no department in the group
+*/
+db.employees.aggregate([
+  {
+    $match: {
+      department: { $exists: true },
+    },
+  }
+]);
+
+db.employees.find({ department: { $exists: true } });
+
+db.employees.find({ department: { $exists: true } }, { empName: 1, _id: 0 });
+
+db.employees.aggregate([
+  // match the required condition
+  { $match: { department: { $exists: true } } },
+  // filter out the dcocuments - $project
+  { $project: { empName: 1, _id: 0 } }
+]);
+
+db.employees.aggregate([
+    // filter out the empName
+    { "$project": {empName: 1, _id: 0}}
+])
+
+
+db.employees.aggregate([
+    {"$group": {_id: "$department"}}
+]);
+
+db.employees.aggregate([
+    {"$match": {"department": {"$exists": true}}},
+    {"$group": {"_id": "$department"}}
+]);
