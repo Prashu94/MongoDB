@@ -316,6 +316,29 @@ i. Fetch all the empName where an employee belongs to any department
 - Examples:
 i. Group all the employees as per department
 ii. Don't include no department in the group
+4. $group - nested fields and multiple fields
+- Examples:
+i. Identify the different roles in which employees have worked
+ii. Group the employees in the collection as per department and salary
+5. $count: used to count the number of documents passed as input to the $count stage
+- $count should be always the last stage in the aggregation pipeline
+Example:
+i. Number of employee documents stored in the employee collections
+ii. Get the unique department in the employee collection.
+6. $sort, $limit, $out
+- $sort - to sort the documents(1(asc)|-1(desc))
+- $limit - to limit the result set
+- $out - to output the result in another collection
+- Example:
+i. Get the top three employees having high salary and output them in anothere collection
+7. $skip
+- To skip certain documents from the result set.
+- Example:
+i. Get the third highest salaried employee from the collection.
+8. $unwind:
+- Used to fetch a particular object from array of nested documents
+- Examples:
+i. Find the employee with employee id: 1 and role worked in Systems Engineer, only bring the specific object from the array of objects.
 */
 db.employees.aggregate([
   {
@@ -350,3 +373,111 @@ db.employees.aggregate([
     {"$match": {"department": {"$exists": true}}},
     {"$group": {"_id": "$department"}}
 ]);
+
+db.employees.aggregate([
+  {"$group": {"_id": "$experience.role"}}
+]);
+
+db.employees.aggregate([
+  {"$group": {"_id": {"department": "$department", "salary":"$salary"}}}
+]);
+
+db.employees.aggregate([
+  {"$count": "noOfDocuments"}
+])
+
+db.employees.aggregate([
+  // 1. Group stage
+  {"$group": {"_id": "$department"}},
+  // 2. Count stage
+  {"$count": "noOfDepartments"}
+]);
+
+db.employees.aggregate([
+  //1. $sort stage
+  {"$sort": {"salary": -1}},
+  // 2. $limit stage
+  {"$limit": 3},
+  // 3. $out stage
+  {"$out": "TopThreePaidEmployees"}
+]);
+
+db.TopThreePaidEmployees.find();
+
+db.employees.aggregate([
+  {"$sort": {"salary":-1}},
+  {"$limit": 3},
+  {"$skip": 2}
+]);
+
+db.employees.aggregate([
+  {"$match": {"$and": [
+    {"empId": 1},
+    {"experience.role": "Systems Engineer"}
+  ]}},
+  {
+    "$project": {"experience.roleExperience": 1, "_id": 0}
+  }
+]);
+
+
+db.employees.aggregate([
+  // 1. $unwind stage- seperates the array of documents into multiple documents with specific id
+  {"$unwind": "$experience"},
+  // 2. Match stage
+  {"$match": {"$and": [
+    {"empId": 1},
+    {"experience.role": "Systems Engineer"}
+  ]}},
+  // 3. Project operator
+  {
+    "$project": {"experience.roleExperience": 1, "_id": 0}
+  }
+]);
+
+db.laptops.insertMany([
+  {"_id": 5001, "brand" : "Asus", "price" : 90000, "model": ["ROG", "ZenBook", "VivoBook"]},
+  {"_id": 5002, "brand" : "Dell", "price" : 75000, "model": ["Inspiron", "Vostro"]},
+  {"_id": 5003, "brand" : "HP", "price" : 68000, "model": ["Pavilion", "Spectre", "Envy"]},
+  {"_id": 5004, "brand" : "Apple", "price" : 100000, "model": ["MacBook Air", "MacBook Pro"]}
+]);
+
+db.laptops.aggregate([{"$group":{_id:"$model"}}
+,{"$count": "totalModels" }
+]);
+
+// Accumulators
+/**
+- To include computed data in the aggregate query result.
+- $sum: count the number of documents
+- $avg: to find the average of one/more fields
+- $min: to fetch minimum value of a group.
+- Note: accumulators are not stage operators rather they are used inside the stage operator like $group.
+- Syntax:
+{$<<accumulatorName>>: "<experession>>"} 
+1. $sum and $avg:
+-  Examples:
+i. Fetch the total number of employees and average salary for each department.
+ii. Fetch the average experience of employees in each department.
+*/
+db.employees.aggregate([
+  {"$group": {
+    "_id": "$department",
+    "noOfEmployees": {"$sum": 1},
+    "averageSalary": {"$avg": "$salary"}
+  }}
+]);
+
+db.employees.aggregate([
+  {"$group": {
+    "_id": "$department",
+    "AverageExperience": {"$avg":{
+      "$sum": "$experience.roleExperience"
+    }}
+  }}
+]);
+
+
+
+
+
