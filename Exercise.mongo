@@ -1,4 +1,4 @@
-[
+db.products.insertMany([
     {
         "productId": "P1001",
         "productName": "iPhone 11 pro",
@@ -530,4 +530,74 @@
             }
         ]
     }
-]
+]);
+
+// 1. Write an aggregate query to find the total number of products sold at shoppers.com
+db.products.aggregate([
+    {
+        "$group": {
+            "_id": "productId",
+            "totalProducts": {"$sum": 1}
+        }
+    }
+]);
+
+
+// 2. Write an aggregate query to find all the unique sellers
+db.products.find({});
+db.products.distinct('productSellers');
+
+// 3. Write an aggregate query to find all the air conditioners.
+db.products.aggregate([
+    { $match: {
+        "productCategory.sub": "Air Conditioners"}
+    }
+]);
+
+// 4. Write an aggregate query to fetch the seller's name and battery capacity of all mobiles.
+db.products.aggregate([
+    // 1. Unwind the array to get all the arrays as seperate entities
+    {
+        "$unwind": "$productSellers"
+    },
+    {"$match": {
+        "productCategory.sub": "mobiles"
+    }},
+    {
+        "$project": {
+            "_id": 0,
+            "productSellers": 1, 
+            "battery": 1
+        }
+    }
+]);
+
+// 5. Write an aggregate query to display the count of products under mobiles categroy.
+db.products.aggregate([
+    {
+        "$match": {
+            "productCategory.sub": "mobiles"
+        }
+    },
+    {
+        "$count": "countOfroducts"
+    }
+]);
+
+// 6. Write an aggregate query to display count of products under all sub categories.
+db.products.aggregate([
+    {"$group": {
+        "_id": "$productCategory.sub",
+        "countProducts": {"$sum": 1}
+    }}
+]);
+
+// 7. Write an aggregate query to display the count of products under all categories i.e electornics, home & furnitures.
+db.products.aggregate([
+    {"$group": {
+        "_id": "$productCategory.main",
+        "countProducts": {"$sum": 1}
+    }}
+]);
+
+

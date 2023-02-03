@@ -459,6 +459,14 @@ db.laptops.aggregate([{"$group":{_id:"$model"}}
 -  Examples:
 i. Fetch the total number of employees and average salary for each department.
 ii. Fetch the average experience of employees in each department.
+2. $min and $max:
+- Examples:
+i. Fethc the minimum and maximum salary paid to the employees by each department
+3. $push with $group stage:
+- Helps to push the required fields as an array after 
+grouping stage.
+- Examples: 
+i. Fetch the list of employee's names and salaries for each department.
 */
 db.employees.aggregate([
   {"$group": {
@@ -477,7 +485,407 @@ db.employees.aggregate([
   }}
 ]);
 
+db.employees.aggregate([
+  {"$group": {"_id": "$department",
+    "minSalary": {"$min": "$salary"},
+    "maxSalary": {"$max": "$salary"}}}
+]);
 
 
+db.employees.aggregate([
+  {"$group": {
+    "_id": "$department",
+    "employees": {"$push": {
+      "employeeName": "$empName",
+      "employeeSalary": "$salary"
+    }}
+  }}
+]);
 
+/**
+String Operators
+1. $concat
+- used for concatenating two or more fields in projection. 
+- Syntax:
+{field1: {$concat: [expression1, expression2, ...]}}
+- Exmaples:
+i. Fetch the empName and department as emp-dept value in the projection
+- $concat with $ifnull: if doucment does not contain the field or value will replace NA
+- Syntax:
+{$ifNull: [<expression1>, <replacement expression if null>]}
+*/
+db.employees.aggregate([
+  {
+    "$project": {
+      "_id": 0,
+      "employeeData": {
+        "$concat": [
+          "$empName",
+          " - ",
+          "$department"
+        ]
+      }
+    }
+  }
+]);
 
+// To remove null values use the ifNull as below
+db.employees.aggregate([
+  {
+    "$project": {
+      "_id": 0,
+      "employeeData": {
+        "$concat":[
+          {"$ifNull": ["$empName", "NA"]},
+          " - ",
+          {"$ifNull": ["$department", "NA"]}
+        ]
+      }
+    }
+  }
+]);
+
+// Date Operations inserting data into new collection.
+db.employeesDate.insertMany([
+    {
+        "empId": 1,
+        "empName": "John",
+        "salary": 40000,
+        "department": "ETA",
+        "dateOfBirth": ISODate("1990-01-01"),
+        "machineId": 1001,
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.7
+            },
+            {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 1.8
+            },
+            {
+                "role": "Technology Analyst",
+                "roleExperience": 1.3
+            }
+        ]
+    },
+    {
+        "empId": 2,
+        "empName": "Maria",
+        "salary": 45000,
+        "dateOfBirth": ISODate("1994-05-08"),
+        "department": "IVS",
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.7
+            },
+            {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 1.6
+            },
+            {
+                "role": "Technology Analyst",
+                "roleExperience": 1.1
+            }
+        ]
+    },
+    {
+        "empId": 3,
+        "empName": "jack",
+        "salary": 43000,
+        "department": "ECSADM",
+        "dateOfBirth": ISODate("1982-03-01"),
+        "machineId": 1002,
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.7
+            },
+            {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 1.3
+            },
+            {
+                "role": "Technology Analyst",
+                "roleExperience": 0.6
+            }
+        ]
+    },
+    {
+        "empId": 4,
+        "empName": "Emily",
+        "salary": 31000,
+        "dateOfBirth": ISODate("1992-07-05"),
+        "department": "DX",
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.7
+            },
+            {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 0.3
+            }
+        ]
+    },
+    {
+        "empId": 5,
+        "empName": "Steve",
+        "salary": 51000,
+        "dateOfBirth": ISODate("1995-07-05"),
+        "department": "SGTSES",
+        "machineId": 1003,
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.7
+            },
+            {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 1.3
+            },
+            {
+                "role": "Technology Analyst",
+                "roleExperience": 2.6
+            },
+            {
+                "role": "Technology Lead",
+                "roleExperience": 0.4
+            }
+        ]
+    },
+    {
+        "empId": 6,
+        "empName": "Stephen",
+        "dateOfBirth": ISODate("1998-09-05"),
+        "salary": 25000,
+        "department": "DXEMP",
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.0
+            }
+        ]
+    },
+    {
+        "empId": 7,
+        "empName": "Kieron",
+        "salary": 35000,
+        "dateOfBirth": ISODate("1989-01-08"),
+        "department": "IND",
+        "machineId": 1004,
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.7
+            },
+            {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 0.8
+            }
+        ]
+    },
+    {
+        "empId": 8,
+        "empName": "Kyle",
+        "dateOfBirth": ISODate("1998-06-08"),
+        "salary": 29000,
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.3
+            }
+        ]
+    },
+    {
+        "empId": 9,
+        "empName": "Charles",
+        "salary": 49000,
+        "dateOfBirth": ISODate("1991-09-03"),
+        "machineId": 1005,
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.7
+            },
+            {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 1.6
+            },
+            {
+                "role": "Technology Analyst",
+                "roleExperience": 1.3
+            }
+        ]
+    },
+    {
+        "empId": 10,
+        "empName": "Robin",
+        "salary": 37000,
+        "dateOfBirth": ISODate("1999-02-02"),
+        "department": "DXEMP",
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.7
+            },
+            {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 1.2
+            }
+        ]
+    },
+    {
+        "empId": 11,
+        "empName": "Tom",
+        "salary": 54000,
+        "dateOfBirth": ISODate("1989-06-01"),
+        "department": "IND",
+        "machineId": 1006,
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.7
+            },
+            {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 1.6
+            },
+            {
+                "role": "Technology Analyst",
+                "roleExperience": 1.7
+            },
+            {
+                "role": "Technology Lead",
+                "roleExperience": 1.5
+            }
+        ]
+    },
+    {
+        "empId": 12,
+        "empName": "Mark",
+        "dateOfBirth": ISODate("1999-03-09"),
+        "salary": 28000,
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.2
+            }
+        ]
+    },
+    {
+        "empId": 13,
+        "empName": "Mike",
+        "dateOfBirth": ISODate("1994-05-09"),
+        "salary": 39000,
+        "machineId": 1007,
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 1.7
+            },
+            {
+                "role": "Senior Systems Engineer",
+                "roleExperience": 1.8
+            },
+            {
+                "role": "Technology Analyst",
+                "roleExperience": 0.3
+            }
+        ]
+    },
+    {
+        "empId": 14,
+        "empName": "Chris",
+        "dateOfBirth": ISODate("1997-09-09"),
+        "salary": 23000,
+        "department": "ETA",
+        "machineId": 1008,
+        "experience": [
+            {
+                "role": "Systems Engineer",
+                "roleExperience": 0.5
+            }
+        ]
+    }
+]
+);
+
+/**
+1. $year, $month 
+- Extracting parts of a date as below:
+i. $year - returns the year portion of the date.
+ii. $month - returns the month of a date as a number between 1 and 12
+iii. $dayOfMonth - returns the day of month for a date as a number between 1 and 31.
+iv. $hour - returns the hour portion of the date between 0 and 23
+v. $minute - Returns the minute portion of the date between 0 and 59.
+vi. $second - Returns the second portion of the date as a single number between 0 and 59
+vii. $millisecond - Returns the millesecond portion of the date as in integer between 0 and 999.
+viii. $dayOfYear - Returns the day of the year for a date as a number between 1 and 366
+ix. $dayOfWeek - Returns the day of the week for a date between 1(Sunday) and 7(Saturday)
+x. $week - Returns the week of the year for a date as a number between 0 and 53.
+
+2. $dateToString:
+- Syntax:
+{
+  $dateToString:{
+    date: <dateExpression>,
+    format: <FormatString>,
+    timezone: <tzExpression>,
+    onNull:<expression>
+  }
+}
+*/
+// Example - Extract the birth year and month from the employeesDate collection
+db.employeesDate.aggregate([
+  {
+    "$project":{
+      "_id":0,
+      "birthYear": {"$year": "$dateOfBirth"},
+      "birthMonth": {"$month": "$dateOfBirth"}
+    }
+  }
+]);
+
+db.employeesDate.aggregate([
+  {
+    "$project": {
+      "_id": 0, 
+      "BirthDay": {
+        "$dateToString": {
+          "date": "$dateOfBirth",
+          "format": "%Y-%m-%d"
+        }
+      }
+    }
+  }
+]);
+
+db.users.insertMany([
+   { "userId": 1, "userName": "Anderson", "points": { "creditPoints": 250, "bonusPoints": 50 }, "category": "Standard" },
+   { "userId": 2, "userName": "Mikey", "points": { "creditPoints": 400, "bonusPoints": 80 }, "category": "Premium" },
+   { "userId": 3, "userName": "Tom", "points": { "creditPoints": 100, bonusPoints:45 }, "category":"Premium" },
+   { "userId": 4, "userName": "Emily", "points": { "creditPoints": 100, "bonusPoints": 35 }, "category": "Standard" }
+]);
+
+db.users.aggregate([
+    { $match: { $and: [{ "userName": { $regex: 'e+' } }, { "points.bonusPoints": { $lte: 50 } }] } },
+    { $group: { _id: "$points.bonusPoints", count: { $sum: "$points.creditPoints" } } }
+]);
+
+db.users.aggregate([
+    {$sort:{"points.creditPoints":1}},
+    {$skip:2},
+    {$limit:3}
+]);
+
+db.users.aggregate([
+    { $match: { "userName": { $regex: 'e+' } }},
+    { $group: { _id: "$points.bonusPoints", count: { $sum: "$points.creditPoints" } } }
+]);
+
+db.users.aggregate([
+    { $group: { _id: "$points.bonusPoints", count: { $sum: "$points.creditPoints" } } },
+    { $match: { "userName": { $regex: 'e+' } }}
+]);
