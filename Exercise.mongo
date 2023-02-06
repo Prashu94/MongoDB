@@ -600,4 +600,32 @@ db.products.aggregate([
     }}
 ]);
 
+// 8. Write an aggregate query to display the name and brand of all products under different categories.
+db.products.aggregate([
+    {
+        "$group": {
+            "_id": "$productCategory.main",
+            "count": {"$sum": 1},
+            "nameAndBrand": {
+                "$push": {
+                    "productName": "$productName",
+                    "productBrand": "$productBrand"
+                }
+            }
+        }
+    }
+]);
 
+// 9. Identify the top 4 products based on brand name of the product and store them into a seperate collection.
+db.products.aggregate([
+    {"$sort": {"productBrand": 1}},
+    {"$limit": 4},
+    {"$out": "top4Brand"}
+]);
+
+//db.top4Brand.drop();
+
+db.top4Brand.find({});
+
+// 10.  Identify and display the second and third products based on the sub category.
+db.products.aggregate([{ "$match":{"productCategory.sub":{"$exists":true}}},{ "$limit": 3},{ "$skip":1}]);

@@ -1,0 +1,45 @@
+/**
+Indexing:
+- To understand the performance of a query we will use .explain("executionStats") in the query to get the plan of the query.
+- executionStages -> stage: COLLSCAN: examines every document of the collection for the given condition.
+- Syntax for creating an index
+createIndex({<field1> : 1|-1})
+1 - asc and -1 for desc
+- after creating indexes the executionStages-> stage changes to FETCH
+- the input stage changes to IXSCAN: The documents are examined based on the index.
+- View and Delete indexes
+-> To check for indexes created on a collection: getIndexes()
+-> To remove an index from the collection: dropIndex()
+- Types of indexes:
+-> Single field index: index created on a single field of a collection. eg: Employees having salary 40000 (db.employees.createIndex({salary:1}))
+-> Compound Index: Index created on two or more fields of a collection. eg: Employees from ETA department having salary greater than 40000 (db.employees.createIndex({"salary": 1, "department": 1}));
+-> Text Index: Allows text search on all fields with string content. eg: Search for employees based on department field(stores string value).(db.employees.createIndex({"department": "text"}))
+- Muti-Key indexes:
+i. Used to index content stored in arrays.
+ii. Creates seperate index entry for each array element.
+iii. Select documents based on one or more elements.
+iv. MongoDB automatically determines during creation.
+- Examples:
+i. Fetch employee documents with salary in range 40000 and 50000 */
+db.employees.find({
+    "salary": {"$gte": 40000, "$lt": 50000}
+}).explain("executionStats");
+
+// Create an index
+db.employees.createIndex({"salary": -1})
+
+// View an index
+db.employees.getIndexes();
+
+// Drop an index
+db.employees.dropIndex({"salary": -1});
+
+// Create a multikey index
+db.employees.createIndex({"experience.role": 1});
+
+db.employees.getIndexes();
+
+// Find all the employees with Technology Lead roles
+db.employees.find({
+    "experience.role": "Technology Lead"
+}).explain("executionStats");

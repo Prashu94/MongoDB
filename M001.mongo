@@ -1,0 +1,129 @@
+/**
+CRUD Operations*/
+/*
+1. Insert:
+==================================
+i. Insert a single document
+- Inserts a single document into a collection
+ii. Insert multiple documents
+- Inserts multiple documents into a collection. Pass an array of documents to the method 
+Note: If the documents do not specify an _id field, MongoDB adds the _id field with an ObjectId value to each document.
+- Insert Behaviour:
+=========================
+i. If the collection does not currently exist, insert operations will create.
+ii. _id field acts a primary key.
+Additional methods for inserts:
+=========================================
+i. db.collection.updateOne(): when used with the upsert: true option
+ii. db.collection.updateMany(): when used with the upsert: true option
+iii. db.collection.findAndModify(): when used with upsert: true option
+iv. db.collection.findOneAndUpdate(): when used with upsert: true option.
+v. db.collection.findOneAndReplace(): when used with upsert: true option.
+vi. db.collection.bulkWrite()
+*/
+// Insert a Single Document
+db.inventory.insertOne(
+    {item: "canvas", qty: 100, tags: ["cotton"], size: {h:28, w:35.5, uom:"cm"}}
+);
+// Insert multiple documents
+db.inventory.insertMany([
+    {item: "journal", qty: 25, tags: ["blank", "red"], size: {h:14, w:21, uom: "cm"}},
+    {item: "mat", qty: 85, tags: ["gray"], size: {h: 27.9, w:35.5, uom: "cm"}},
+    {item: "mousepad", qty: 25, tags: ["gel", "blue"], size: {h: 19, w: 22.85, uom: "cm"}}
+]);
+
+/**
+2. Update Operations
+=============================
+i.  Update Documents in a collection
+- To update documents in the collection, MongoDB provides update operators as below:
+Fields
+-----------------------------------------------------------
+-> $currentDate: Sets the value of a field to current date, either as a Date or a Timestamp.
+-> $inc: increments the value of the field by the specified amount.
+-> $min: Only updates the field if the specified value is less than the existing field value.
+-> $max: Only updates the field if the specified value is more than the exisiting field value.
+-> $mul: Multiplies the value of the field by the specified amount.
+-> $rename: Renames a field
+-> $set: Sets the value of a field in a document.
+-> $setOnInsert: Sets the value of a field if an update results in an insert of a document. Has no affect on update operations that modify existing documents.
+-> $unset: Removes the specified field from a document.
+
+Array
+----------------------------------------------------------
+-> $ - Acts as a placeholder to update the first element that matches the query documents.
+-> $[] - Acts as a placeholder to update all elements in an array for the document that match the query condition.
+-> $[<identifier>] - Acts as a placeholder to update all elements that match the arrayFilters condition for the documents that match the query condition.
+-> $addToSet - Adds elements to an array only if they do no already exist in the set.
+-> $pop - Removes the first or last item of an array.
+-> $pull - Removes all array elements that match a specified query.
+-> $pullAll - Removes all matching values from an array.
+
+Modifiers
+----------------------------------------------------------
+-> $each - Modifies the $push and $addToSet operators to append multiple items for array updates.
+-> $position - Modifies the $push operator to specify the position in the array to add elements.
+-> $slice - Modifies the $push operator to limit size of updated arrays.
+-> $sort - Modifies the $push operator to reorder documents stored in an array.
+*/
+
+// Lecture Examples:
+// 1. Find all documents in the zips collection where the zip code is equal to "12434"
+db.zips.find({"zip": "35014"});
+
+// 2. Find all the documents in the zip collection where the city field is equal to "HUDSON"
+db.zips.find({"city": "HUDSON"});
+
+// 3. Find how many documents in the zips collection have the city field as HUDSON
+db.zips.find({"city": "HUDSON"}).count();
+
+// 4. Update all documents in the zips collection where the city field is equal to "HUDSON" by adding 10 to the current value of the "pop" field
+db.zips.updateMany({"city":"HUDSON"}, {"$inc": {"pop": 10}});
+
+// 5. Update a single document in the zips collection where the zip field is equal to "12534" by setting the value of "pop" to 17630
+db.zips.find({zip: "12534"});
+db.zips.updateMany({"zip": "12534"}, {"$set": {"pop": 17630}});
+
+// 6. Update a single document in the zips collection where the zip field is equal to "12534" by setting the value of the "population" field to 17630.
+db.zips.updateOne({"zip": "12534"}, {"$set": {"population": 17650}});
+
+// 7. Find all documents in the grades collection where the student_id field is 151 and the class field is 339.
+db.grades.find({"student_id": 151, "class_id": 339});
+
+// 8. Find all documents in the grades collection where the student_id field is 250 and the class field is 339.
+db.grades.find({"student_id": 250, "class_id": 339});
+
+// 9. Update one document in the grades collection where the student_id is 250 and the class field is 339, by adding a document element to the "scores" array
+db.grades.updateOne({"student_id": 250, "class_id": 339}, 
+{"$addToSet": {"scores": {
+    "type": "extra credit",
+    "score": 100
+}}});
+
+
+/**
+$currentDate: sets the value of a field to the current date.
+{$currentDate: {<field1>: <typeSpecification>, ....}} 
+<typeSpecification> can be:
+- a boolean true to set the field value to the current date as Date or, 
+- a document {$type: "timestamp"} or {$type: "date"} which explicitly specifies the type.*/
+// Example: Create a sample collection customers with the following document:
+db.customers.insertOne(
+    {_id: 1, status: 'a', lastModified: ISODate("2013-10-02T01:11:18.965Z")}
+);
+// Example: Update the customer document by updating the lastModifiedDate field to the current date, the "cancellation.date" field to the current timestamp as well as updating the status field to "D" and the "cancellation.reason" to "user request"
+db.customers.updateOne(
+   { _id: 1 },
+   {
+     $currentDate: {
+        lastModified: true,
+        "cancellation.date": { $type: "timestamp" }
+     },
+     $set: {
+        "cancellation.reason": "user request",
+        status: "D"
+     }
+   }
+);
+
+db.customers.find({});
