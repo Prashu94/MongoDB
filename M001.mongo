@@ -127,3 +127,82 @@ db.customers.updateOne(
 );
 
 db.customers.find({});
+
+
+/**
+$inc: increments a field by a specified value and has the following form:
+{$inc: {<field1>: <amount1>, <field2>: <amount2>}}
+- $inc accepts both positive and negative values.
+- If the field does not exist, $inc creates the field and sets the field to the specified value.
+- use of the $inc operator with a null value will lead to error.
+- $inc operation is an atomic operation within a single document.
+ */
+
+// EXample:
+/**
+. increase the "metrics.orders" by 1
+. increase the quantity field by -2 */
+//db.products.drop();
+db.products.insertOne({
+    "_id": 1,
+    "sku": "abc123",
+    "quantity": 10, 
+    "metrics": {
+        "orders": 2, 
+        "ratings": 3.5
+    }
+});
+
+db.products.updateOne(
+    {"sku": "abc123"},
+    {"$inc": {"quantity": -2, "metrics.orders": 1}}
+);
+
+db.products.find({});
+
+/**
+$min: updates the values of the field to a specified value if the specified value is less than the current value of the field. The $min operator can compare values of different types, using the BSON comparison order 
+{$min: {<field1>: <value1>, ...}}
+- If the field does not exist, the $min operator sets the value to the specified value
+- For comparisons between values of different types, such as a number and a null, $min uses BSON comparison order.
+*/
+// Examples:
+/**
+1. The lowScore for the document currently has the value 200. The following operation uses $min to compare 200 to a specified value 150 and updates the value of lowScore 200 to 150 since 150 is less than 200.
+2. The next operation has no effect since the current value of the field lowScore i.e 150 is less than 250
+ */
+db.scores.insertOne( { _id: 1, highScore: 800, lowScore: 200 } );
+
+db.scores.updateOne(
+    {"_id": 1},
+    {$min: {"lowScore": 150}}
+);
+
+db.scores.updateOne(
+    {"_id": 1},
+    {$min: {"lowScore": 250}}
+);
+
+db.scores.find({});
+
+/**
+Use $min to compare dates
+- The following operation compares the current value of the dateEntered field with the specified date to determine whethere to update the field.
+ */
+db.tags.insertOne(
+   {
+     _id: 1,
+     desc: "crafts",
+     dateEntered: ISODate("2013-10-01T05:00:00Z"),
+     dateExpired: ISODate("2013-10-01T16:38:16Z")
+   }
+);
+
+db.tags.updateOne(
+    {"_id": 1},
+    {$min: {"dateEntered": ISODate("2013-09-25")}}
+);
+
+db.tags.find({});
+
+

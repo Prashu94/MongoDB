@@ -1,0 +1,129 @@
+/**
+Bulk Write:
+- bulkWrite() method can be used to perform multiple write operations i.e insertion, updation and deletion simultaneously
+1. insertion using bulkWrite() method:
+- documents can be inserted using the bulWrite() method one at a time with the help of insertOne() option:
+db.collection.bulkWrite({
+    insertOne: {
+        document: {document to be inserted into the collection}
+    }
+}) 
+Note: insertMany and insert commands cannot be used with bulkWrite() method
+2. updation using bulkWrite() method
+- documents can be updated using the bulkWrite() method using updateOne() as well updateMany() options
+db.collections.bulkWrite({
+    updateOne/updateMany: {
+        filter: {condition to fitler the documents for update},
+        update: {the actual updates to be done}
+    }
+})
+3. deletion using bulkWrite() method
+- documents can be deleted using bulkWrite() method using the deleteOne() as well as deleteMany() options.
+db.collection.bulkWrite({
+    deleteOne/deleteMany: {
+        filter: {condition to filter the documents for deleting}
+    }
+})
+4. Perform Insertion, Updation and Deletion simultaneously
+*/
+db.employees.bulkWrite([
+    {
+        insertOne: {
+            document: {
+                "empId": 21,
+                "empName": "Jackson",
+                "salary": 46000,
+                "department": "INDD",
+                "machineId": 1011,
+                "experience": [
+                    {
+                        "role": "Systems Engineer",
+                        "roleExperience": 1.7
+                    }
+                ]
+            }
+        }
+    },
+    {
+        insertOne: {
+            document: {
+                "empId": 22,
+                "empName": "Sonia",
+                "salary": 35000,
+                "department": "DXEMP",
+                "experience": [
+                    {
+                        "role": "Systems Engineer",
+                        "roleExperience": 1.8
+                    }
+                ]
+            }
+        }
+    }
+]);
+
+db.employees.find({"empId": {"$in": [21, 22]}});
+
+// Update Example: Update the salary of empId 1 to 46000 and salary of all employees from IVS department to 41000
+db.employees.bulkWrite([
+    {
+        updateOne: {
+            filter: {"empId": 1},
+            update: {$set: {"salary": 48000}},
+            upsert: true
+        }
+    },
+    {
+        updateMany: {
+            filter: {"department": "IVS"},
+            update: {$set: {"salary": 49000}},
+            upsert: true
+        }
+    }
+]);
+
+db.employees.find({"empId": 1});
+db.employees.find({"department": "IVS"});
+
+// Example Delete: delete the documents with empId: 1 and delete all the documents of IVS department
+db.employees.bulkWrite([
+    {
+        deleteOne: {
+            filter: {empId: 1}
+        }
+    },
+    {
+        deleteMany: {
+            filter: {"department": "IVS"}
+        }
+    }
+]);
+
+db.employees.find({"empId": 1});
+db.employees.find({"department": "IVS"});
+
+// Example: Simultaneous insert, update and delete operation
+/**
+1. Insert a new employee document
+{ empId:21, empName: "Henry", salary:37000, department: "INDD",  machineId:1020, experience:[ { role: "Systems Engineer", roleExperience:1.0 } ] }
+2. Update the salary of empId 11 to 34000
+3. Delete the records of employee from DXEMP department */
+db.employees.bulkWrite([
+    {
+        insertOne: {
+            document: { empId:21, empName: "Henry", salary:37000, department: "INDD",  machineId:1020, experience:[ { role: "Systems Engineer", roleExperience:1.0 } ] }
+        }
+    },
+    {
+        updateOne: {
+            filter: {empId: 11},
+            update: {"$set": {"salary": 40000}},
+            upsert: true
+        }
+    },
+    {
+        deleteOne: {
+            filter: {"department": "DXEMP"}
+        }
+    }
+]);

@@ -1,0 +1,32 @@
+/**
+1. Create a database with name InfyAirlinesDB
+
+2. Create a collection with name Flights in InfyAirlinesDB
+
+3. Insert the data (downloaded from the above link) into Flights collection,
+
+4. Display all the NON STOP filgts from Bengaluru to Delhi.
+
+5. Display the flightId of all those flights in which no booking is done
+
+6. Display the flights from Chennai to Kolkata having more than 10 seats available
+
+7. Display the baseFare for each class of flight E6-2145
+
+8. Increase the baseFare for Economy Class of all the flights between any source and destination to 3800 if it is less than 3800
+
+9. Add a new booking for 1 passenger (Chennai to Delhi), in flight AI-766. Passenger Details are:
+{
+   "passengerName": "Jonty",
+   "passengerAge": 29,
+   "gender": "Male"
+}
+
+10. Passengers have decided to cancel the booking with BookingId 1, hence, set the ticketStatus to 'Cancelled' for the booking, set bookingStatus to 'Cancelled' for each passenger, increase the available seats
+
+11. Remove the bookings field from E6-2145
+
+Display the total Number of bookings done by each emaild
+
+Display all the bookings done with departure date in 2021.
+ */
