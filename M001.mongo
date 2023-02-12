@@ -187,7 +187,7 @@ db.scores.find({});
 
 /**
 Use $min to compare dates
-- The following operation compares the current value of the dateEntered field with the specified date to determine whethere to update the field.
+- The following operation compares the current value of the dateEntered field with the specified date to determine whether to update the field.
  */
 db.tags.insertOne(
    {
@@ -206,3 +206,20 @@ db.tags.updateOne(
 db.tags.find({});
 
 
+/**
+$max: updates the value of the field to a specified value if the specified value is a greater than the current value of the field. The $max operator can compare the values of different types, using the BSON comparison order.
+{$max: {<field1>:<value1>, ....}} 
+- If the field does not exists, the $max operator sets the value to the specified value.
+Examples:
+- The highscore for the document currently has the value 800. The following operation:
+i. Compares the highscore, 800, to the specified value, 950.
+ii. Updates the highscore to 950 since 950 is greater than 800.
+*/
+db.scores.updateOne({"_id": 1}, {$max: {highScore: 950}});
+
+db.scores.find({});
+
+db.tags.updateOne(
+   { _id: 1 },
+   { $max: { dateExpired: ISODate("2013-09-30") } }
+)
