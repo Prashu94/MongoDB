@@ -222,4 +222,136 @@ db.scores.find({});
 db.tags.updateOne(
    { _id: 1 },
    { $max: { dateExpired: ISODate("2013-09-30") } }
-)
+);
+
+/**
+$mul: multiply the value of a field by a number.
+{$mul: {<field1>: <number1>}} 
+- The field to update must contain a numeric value.
+- To specify a <field> in an embedded document or in an array, use dot notation
+- If the field does not exist in a docuement, $mul create the field and sets the value to zero of the same numeric type as the multiplier
+- Examples:
+i. Multiply the Value of a field
+- The operation below will add the price :0 and multiply the quantity by 2*/
+db.products.updateOne({
+    "_id": 1
+}, {$mul: {
+    price: 1.25,
+    quantity: 2
+}});
+
+db.products.find({});
+
+/**
+$rename - updates the name of a field and has the following form:
+{$rename: {<field1>: <newName1>, ...}} 
+- The new field name must differ from the existing field name.To specify a <field> in an embedded document, use a dot notation.
+- The $rename operator logically performs an $unset of both the old name and the new name, and then perform $unset operation with the new name. As such the operation may no preserve the order of the fields in the document; i.e. the renamed field may move within the document.
+- If the document already has the field with the <newName>, the $rename operator removes that field and renames the specified <field> to <newName>
+- If the field to rename does not exist in a document, $rename does nothing.
+- For fields in embedded documents, the $rename operator can rename these fields as well as move the fields in an out of embedded documents.
+*/
+db.students.insertMany(
+    [
+   {
+     "_id": 1,
+     "alias": [ "The American Cincinnatus", "The American Fabius" ],
+     "mobile": "555-555-5555",
+     "nmae": { "first" : "george", "last" : "washington" }
+   },
+   {
+     "_id": 2,
+     "alias": [ "My dearest friend" ],
+     "mobile": "222-222-2222",
+     "nmae": { "first" : "abigail", "last" : "adams" }
+   },
+   {
+     "_id": 3,
+     "alias": [ "Amazing grace" ],
+     "mobile": "111-111-1111",
+     "nmae": { "first" : "grace", "last" : "hopper" }
+   }
+]
+);
+
+// Rename a field
+db.students.updateMany({}, {"$rename": {"nmae": "name"}});
+
+db.students.find({});
+
+// Rename a field in an embedded document
+db.students.updateOne({_id: 1}, {$rename: {"name.first": "name.fname"}});
+
+db.students.find({});
+
+// Rename a field that does not exist
+db.students.updateOne({_id: 1}, {$rename: {'wife': 'spouse'}});
+
+db.students.find({});
+
+/**
+$set: operator replaces the value of a field with a specified value.
+{$set: {<field1>: <value1>}}
+- If the field does not exist, $set will add a new field with a specified value, provided that the new field does not violate a type constraint. If you specify a dotted path for a non-existent field, $set will create the embedded documents as needed to fulfill the dotted path to the field.
+- If you specify multiple-field value pairs, $set will update or create each field. */
+
+db.products.drop();
+
+db.products.insertOne(
+   {
+     _id: 100,
+     quantity: 250,
+     instock: true,
+     reorder: false,
+     details: { model: "14QQ", make: "Clothes Corp" },
+     tags: [ "apparel", "clothing" ],
+     ratings: [ { by: "Customer007", rating: 4 } ]
+   }
+);
+
+// Set Top-Level Fields
+/**
+For the document matching the criteria _id equal to 100, the following operation uses the $set operator to update the value of the quantity field, details field and tags field. */
+db.products.updateOne(
+    {_id: 100}, 
+    {
+        $set: {
+            quantity: 500,
+            details: {model: "2600", make: "Fashionaries"},
+            tags: ["coats", "outerwear", "clothing"]
+        }
+    }
+);
+
+db.products.find({});
+
+// Set Fields in Embedded-Documents
+/**
+- TO specify a field in an embedded document or an array, use dot.notation
+- For the document mathcing the criteria _id equal to 100, the following operation updates the make field in the details document. */
+db.products.updateOne(
+    {
+        _id: 100
+    },
+    {
+        $set: {"details.make": "Kustom Kidz"}
+    }
+);
+
+db.products.find({});
+
+
+// Set Elements in Array
+/**
+- For the document matching the criteria _id equal to 100, the following operation updates the second element of the array in the tags field and the rating field in the first element of the ratings array */
+
+db.products.updateOne({
+    _id: 100
+}, {
+    $set: {
+        "tags.1": "rain gear",
+        "ratings.0.rating": 2
+    }
+});
+
+db.products.find({});
