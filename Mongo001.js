@@ -23,13 +23,13 @@ vi. db.collection.bulkWrite()
 */
 // Insert a Single Document
 db.inventory.insertOne(
-    {item: "canvas", qty: 100, tags: ["cotton"], size: {h:28, w:35.5, uom:"cm"}}
+    { item: "canvas", qty: 100, tags: ["cotton"], size: { h: 28, w: 35.5, uom: "cm" } }
 );
 // Insert multiple documents
 db.inventory.insertMany([
-    {item: "journal", qty: 25, tags: ["blank", "red"], size: {h:14, w:21, uom: "cm"}},
-    {item: "mat", qty: 85, tags: ["gray"], size: {h: 27.9, w:35.5, uom: "cm"}},
-    {item: "mousepad", qty: 25, tags: ["gel", "blue"], size: {h: 19, w: 22.85, uom: "cm"}}
+    { item: "journal", qty: 25, tags: ["blank", "red"], size: { h: 14, w: 21, uom: "cm" } },
+    { item: "mat", qty: 85, tags: ["gray"], size: { h: 27.9, w: 35.5, uom: "cm" } },
+    { item: "mousepad", qty: 25, tags: ["gel", "blue"], size: { h: 19, w: 22.85, uom: "cm" } }
 ]);
 
 /**
@@ -69,36 +69,40 @@ Modifiers
 
 // Lecture Examples:
 // 1. Find all documents in the zips collection where the zip code is equal to "12434"
-db.zips.find({"zip": "35014"});
+db.zips.find({ "zip": "35014" });
 
 // 2. Find all the documents in the zip collection where the city field is equal to "HUDSON"
-db.zips.find({"city": "HUDSON"});
+db.zips.find({ "city": "HUDSON" });
 
 // 3. Find how many documents in the zips collection have the city field as HUDSON
-db.zips.find({"city": "HUDSON"}).count();
+db.zips.find({ "city": "HUDSON" }).count();
 
 // 4. Update all documents in the zips collection where the city field is equal to "HUDSON" by adding 10 to the current value of the "pop" field
-db.zips.updateMany({"city":"HUDSON"}, {"$inc": {"pop": 10}});
+db.zips.updateMany({ "city": "HUDSON" }, { "$inc": { "pop": 10 } });
 
 // 5. Update a single document in the zips collection where the zip field is equal to "12534" by setting the value of "pop" to 17630
-db.zips.find({zip: "12534"});
-db.zips.updateMany({"zip": "12534"}, {"$set": {"pop": 17630}});
+db.zips.find({ zip: "12534" });
+db.zips.updateMany({ "zip": "12534" }, { "$set": { "pop": 17630 } });
 
 // 6. Update a single document in the zips collection where the zip field is equal to "12534" by setting the value of the "population" field to 17630.
-db.zips.updateOne({"zip": "12534"}, {"$set": {"population": 17650}});
+db.zips.updateOne({ "zip": "12534" }, { "$set": { "population": 17650 } });
 
 // 7. Find all documents in the grades collection where the student_id field is 151 and the class field is 339.
-db.grades.find({"student_id": 151, "class_id": 339});
+db.grades.find({ "student_id": 151, "class_id": 339 });
 
 // 8. Find all documents in the grades collection where the student_id field is 250 and the class field is 339.
-db.grades.find({"student_id": 250, "class_id": 339});
+db.grades.find({ "student_id": 250, "class_id": 339 });
 
 // 9. Update one document in the grades collection where the student_id is 250 and the class field is 339, by adding a document element to the "scores" array
-db.grades.updateOne({"student_id": 250, "class_id": 339}, 
-{"$addToSet": {"scores": {
-    "type": "extra credit",
-    "score": 100
-}}});
+db.grades.updateOne({ "student_id": 250, "class_id": 339 },
+    {
+        "$addToSet": {
+            "scores": {
+                "type": "extra credit",
+                "score": 100
+            }
+        }
+    });
 
 
 /**
@@ -109,21 +113,23 @@ $currentDate: sets the value of a field to the current date.
 - a document {$type: "timestamp"} or {$type: "date"} which explicitly specifies the type.*/
 // Example: Create a sample collection customers with the following document:
 db.customers.insertOne(
-    {_id: 1, status: 'a', lastModified: ISODate("2013-10-02T01:11:18.965Z")}
+    { _id: 1, status: 'a', lastModified: ISODate("2013-10-02T01:11:18.965Z") }
 );
-// Example: Update the customer document by updating the lastModifiedDate field to the current date, the "cancellation.date" field to the current timestamp as well as updating the status field to "D" and the "cancellation.reason" to "user request"
+// Example: Update the customer document by updating the lastModifiedDate field to the current date, 
+// the "cancellation.date" field to the current timestamp as well as updating the status field to 
+//"D" and the "cancellation.reason" to "user request"
 db.customers.updateOne(
-   { _id: 1 },
-   {
-     $currentDate: {
-        lastModified: true,
-        "cancellation.date": { $type: "timestamp" }
-     },
-     $set: {
-        "cancellation.reason": "user request",
-        status: "D"
-     }
-   }
+    { _id: 1 },
+    {
+        $currentDate: {
+            lastModified: true,
+            "cancellation.date": { $type: "timestamp" }
+        },
+        $set: {
+            "cancellation.reason": "user request",
+            status: "D"
+        }
+    }
 );
 
 db.customers.find({});
@@ -146,41 +152,43 @@ $inc: increments a field by a specified value and has the following form:
 db.products.insertOne({
     "_id": 1,
     "sku": "abc123",
-    "quantity": 10, 
+    "quantity": 10,
     "metrics": {
-        "orders": 2, 
+        "orders": 2,
         "ratings": 3.5
     }
 });
 
 db.products.updateOne(
-    {"sku": "abc123"},
-    {"$inc": {"quantity": -2, "metrics.orders": 1}}
+    { "sku": "abc123" },
+    { "$inc": { "quantity": -2, "metrics.orders": 1 } }
 );
 
 db.products.find({});
 
 /**
-$min: updates the values of the field to a specified value if the specified value is less than the current value of the field. The $min operator can compare values of different types, using the BSON comparison order 
+$min: updates the values of the field to a specified value if the specified value is less than the current value of the field. 
+The $min operator can compare values of different types, using the BSON comparison order 
 {$min: {<field1>: <value1>, ...}}
 - If the field does not exist, the $min operator sets the value to the specified value
 - For comparisons between values of different types, such as a number and a null, $min uses BSON comparison order.
 */
 // Examples:
 /**
-1. The lowScore for the document currently has the value 200. The following operation uses $min to compare 200 to a specified value 150 and updates the value of lowScore 200 to 150 since 150 is less than 200.
+1. The lowScore for the document currently has the value 200. The following operation uses $min to compare 200 to a 
+specified value 150 and updates the value of lowScore 200 to 150 since 150 is less than 200.
 2. The next operation has no effect since the current value of the field lowScore i.e 150 is less than 250
  */
-db.scores.insertOne( { _id: 1, highScore: 800, lowScore: 200 } );
+db.scores.insertOne({ _id: 1, highScore: 800, lowScore: 200 });
 
 db.scores.updateOne(
-    {"_id": 1},
-    {$min: {"lowScore": 150}}
+    { "_id": 1 },
+    { $min: { "lowScore": 150 } }
 );
 
 db.scores.updateOne(
-    {"_id": 1},
-    {$min: {"lowScore": 250}}
+    { "_id": 1 },
+    { $min: { "lowScore": 250 } }
 );
 
 db.scores.find({});
@@ -190,24 +198,25 @@ Use $min to compare dates
 - The following operation compares the current value of the dateEntered field with the specified date to determine whether to update the field.
  */
 db.tags.insertOne(
-   {
-     _id: 1,
-     desc: "crafts",
-     dateEntered: ISODate("2013-10-01T05:00:00Z"),
-     dateExpired: ISODate("2013-10-01T16:38:16Z")
-   }
+    {
+        _id: 1,
+        desc: "crafts",
+        dateEntered: ISODate("2013-10-01T05:00:00Z"),
+        dateExpired: ISODate("2013-10-01T16:38:16Z")
+    }
 );
 
 db.tags.updateOne(
-    {"_id": 1},
-    {$min: {"dateEntered": ISODate("2013-09-25")}}
+    { "_id": 1 },
+    { $min: { "dateEntered": ISODate("2013-09-25") } }
 );
 
 db.tags.find({});
 
 
 /**
-$max: updates the value of the field to a specified value if the specified value is a greater than the current value of the field. The $max operator can compare the values of different types, using the BSON comparison order.
+$max: updates the value of the field to a specified value if the specified value is a greater than the current value of the field. 
+The $max operator can compare the values of different types, using the BSON comparison order.
 {$max: {<field1>:<value1>, ....}} 
 - If the field does not exists, the $max operator sets the value to the specified value.
 Examples:
@@ -215,13 +224,13 @@ Examples:
 i. Compares the highscore, 800, to the specified value, 950.
 ii. Updates the highscore to 950 since 950 is greater than 800.
 */
-db.scores.updateOne({"_id": 1}, {$max: {highScore: 950}});
+db.scores.updateOne({ "_id": 1 }, { $max: { highScore: 950 } });
 
 db.scores.find({});
 
 db.tags.updateOne(
-   { _id: 1 },
-   { $max: { dateExpired: ISODate("2013-09-30") } }
+    { _id: 1 },
+    { $max: { dateExpired: ISODate("2013-09-30") } }
 );
 
 /**
@@ -235,10 +244,12 @@ i. Multiply the Value of a field
 - The operation below will add the price :0 and multiply the quantity by 2*/
 db.products.updateOne({
     "_id": 1
-}, {$mul: {
-    price: 1.25,
-    quantity: 2
-}});
+}, {
+    $mul: {
+        price: 1.25,
+        quantity: 2
+    }
+    });
 
 db.products.find({});
 
@@ -246,46 +257,47 @@ db.products.find({});
 $rename - updates the name of a field and has the following form:
 {$rename: {<field1>: <newName1>, ...}} 
 - The new field name must differ from the existing field name.To specify a <field> in an embedded document, use a dot notation.
-- The $rename operator logically performs an $unset of both the old name and the new name, and then perform $unset operation with the new name. As such the operation may no preserve the order of the fields in the document; i.e. the renamed field may move within the document.
+- The $rename operator logically performs an $unset of both the old name and the new name, and then perform $unset operation with the new name. 
+As such the operation may no preserve the order of the fields in the document; i.e. the renamed field may move within the document.
 - If the document already has the field with the <newName>, the $rename operator removes that field and renames the specified <field> to <newName>
 - If the field to rename does not exist in a document, $rename does nothing.
 - For fields in embedded documents, the $rename operator can rename these fields as well as move the fields in an out of embedded documents.
 */
 db.students.insertMany(
     [
-   {
-     "_id": 1,
-     "alias": [ "The American Cincinnatus", "The American Fabius" ],
-     "mobile": "555-555-5555",
-     "nmae": { "first" : "george", "last" : "washington" }
-   },
-   {
-     "_id": 2,
-     "alias": [ "My dearest friend" ],
-     "mobile": "222-222-2222",
-     "nmae": { "first" : "abigail", "last" : "adams" }
-   },
-   {
-     "_id": 3,
-     "alias": [ "Amazing grace" ],
-     "mobile": "111-111-1111",
-     "nmae": { "first" : "grace", "last" : "hopper" }
-   }
-]
+        {
+            "_id": 1,
+            "alias": ["The American Cincinnatus", "The American Fabius"],
+            "mobile": "555-555-5555",
+            "nmae": { "first": "george", "last": "washington" }
+        },
+        {
+            "_id": 2,
+            "alias": ["My dearest friend"],
+            "mobile": "222-222-2222",
+            "nmae": { "first": "abigail", "last": "adams" }
+        },
+        {
+            "_id": 3,
+            "alias": ["Amazing grace"],
+            "mobile": "111-111-1111",
+            "nmae": { "first": "grace", "last": "hopper" }
+        }
+    ]
 );
 
 // Rename a field
-db.students.updateMany({}, {"$rename": {"nmae": "name"}});
+db.students.updateMany({}, { "$rename": { "nmae": "name" } });
 
 db.students.find({});
 
 // Rename a field in an embedded document
-db.students.updateOne({_id: 1}, {$rename: {"name.first": "name.fname"}});
+db.students.updateOne({ _id: 1 }, { $rename: { "name.first": "name.fname" } });
 
 db.students.find({});
 
 // Rename a field that does not exist
-db.students.updateOne({_id: 1}, {$rename: {'wife': 'spouse'}});
+db.students.updateOne({ _id: 1 }, { $rename: { 'wife': 'spouse' } });
 
 db.students.find({});
 
@@ -298,26 +310,27 @@ $set: operator replaces the value of a field with a specified value.
 db.products.drop();
 
 db.products.insertOne(
-   {
-     _id: 100,
-     quantity: 250,
-     instock: true,
-     reorder: false,
-     details: { model: "14QQ", make: "Clothes Corp" },
-     tags: [ "apparel", "clothing" ],
-     ratings: [ { by: "Customer007", rating: 4 } ]
-   }
+    {
+        _id: 100,
+        quantity: 250,
+        instock: true,
+        reorder: false,
+        details: { model: "14QQ", make: "Clothes Corp" },
+        tags: ["apparel", "clothing"],
+        ratings: [{ by: "Customer007", rating: 4 }]
+    }
 );
 
 // Set Top-Level Fields
 /**
-For the document matching the criteria _id equal to 100, the following operation uses the $set operator to update the value of the quantity field, details field and tags field. */
+For the document matching the criteria _id equal to 100, 
+the following operation uses the $set operator to update the value of the quantity field, details field and tags field. */
 db.products.updateOne(
-    {_id: 100}, 
+    { _id: 100 },
     {
         $set: {
             quantity: 500,
-            details: {model: "2600", make: "Fashionaries"},
+            details: { model: "2600", make: "Fashionaries" },
             tags: ["coats", "outerwear", "clothing"]
         }
     }
@@ -334,7 +347,7 @@ db.products.updateOne(
         _id: 100
     },
     {
-        $set: {"details.make": "Kustom Kidz"}
+        $set: { "details.make": "Kustom Kidz" }
     }
 );
 
@@ -343,16 +356,17 @@ db.products.find({});
 
 // Set Elements in Array
 /**
-- For the document matching the criteria _id equal to 100, the following operation updates the second element of the array in the tags field and the rating field in the first element of the ratings array */
+- For the document matching the criteria _id equal to 100, 
+the following operation updates the second element of the array in the tags field and the rating field in the first element of the ratings array */
 
 db.products.updateOne({
     _id: 100
 }, {
-    $set: {
-        "tags.1": "rain gear",
-        "ratings.0.rating": 2
-    }
-});
+        $set: {
+            "tags.1": "rain gear",
+            "ratings.0.rating": 2
+        }
+    });
 
 db.products.find({});
 
@@ -365,7 +379,7 @@ result in an insert then it does nothing.
 Example: Insert a new document using db.collections.updateOne() with the upsert:true parameter
 */
 db.products.updateOne(
-    {_id: 1},
+    { _id: 1 },
     {
         $set: {item: "apple"},
         $setOnInsert: {defaultQty: 100}    },
@@ -440,5 +454,202 @@ db.students.updateOne(
 // The positional $ operator acts as a placeholder for the first_match of the update query document.
 
 // 2. Update Documents in an array:
+/*
+The positional $ operator facilitates updates to arrays that contain emebedded documents. Use the $ 
+positional operator to access the fields in the embedded documents with the dot notation on the $ operator.
+*/
 // Update the std field of the first array element that matches the grade equal to 85 condition.
+// Insert document with _id : 4
+db.students.insertOne(
+{
+  _id: 4,
+  grades: [
+     { grade: 80, mean: 75, std: 8 },
+     { grade: 85, mean: 90, std: 5 },
+     { grade: 85, mean: 85, std: 8 }
+  ]
+});
 
+db.students.find({});
+
+db.students.updateOne(
+    {_id: 4, "grades.grade": 85},
+    {$set: {"grades.$.std": 6}});
+
+/*
+3. Update Embedded Documents Using Multiple Field Matches
+- The $ operator can update the first array element that matches multiple query criteria specified with the $elemMatch operator.
+
+*/
+db.students.insertOne({
+    _id: 5,
+  grades: [
+     { grade: 80, mean: 75, std: 8 },
+     { grade: 85, mean: 90, std: 5 },
+     { grade: 90, mean: 85, std: 3 }
+  ]});
+
+db.students.find({});
+
+// Example: The $operator updates the value of the std field in the first embedded document that has grade field
+// with a value <= 90 and a mean field with a value >= 80
+db.students.updateOne(
+    {
+        _id: 5,
+        grades: {$elemMatch: {grade: {$lte: 90}, mean: {$gt: 80}}}    },
+    {
+        $set: {"grades.$.std": 6}    });
+
+/*
+4. Update With Multiple Array Matches
+- The positional $ update operator behaves ambigously when the query has multiple array fields to filter the documents in the collection.
+*/
+db.students_deans_list.drop();
+
+db.students_deans_list.insertMany(
+    [
+        {
+            _id: 8,
+            activity_ids: [1, 2],
+            grades: [90, 95],
+            deans_list: [2021, 2020]        }    ]);
+
+db.students_deans_list.find({});
+/*
+Example: 
+The user attempts to modify the deans_list field, filtering documents using the activity_ids, deans_list,
+and grades fields, and updating the 2021 value in the deans_list field to 2022
+*/
+db.students_deans_list.updateOne(
+    {activity_ids: 1, grades: 95, deans_list: 2021},
+    {
+        $set: {
+            "deans_list.$[element]": 2022        }    },
+    {
+        arrayFilters:[{"element":{$eq: 2020}}]    });
+
+/*
+When the server executes the updateOne method above, it filters the available documents using values in the supplied array fields.
+Although the deans_list field is used in the filter, it is not the field used by the positional $ update operator 
+to determine which position in the array to update.
+The updateOne method matched the deans_list field on 2021, but the positional 
+$ update operator instead changed the 2020 value to 2022.
+To avoid unexpected results when matching on multiple arrays, 
+instead use the filtered positional operator $[<identifier>]
+*/
+/*
+$[<identifier>]: The filtered positional operator $[<identifier>] identifies the array elements that match the
+arrayFilters conditions for an update operation e.g: db.collection.updateMany() and db.collection.findAndModify()
+Used in conjuction with the arrayFitlers option, the $[<identifier>] operator has the following form:
+
+{ <update operator>: { "<array>.$[<identifier>]" : value } },
+{ arrayFilters: [ { <identifier>: <condition> } ] }
+
+db.collection.updateMany(
+   { <query conditions> },
+   { <update operator>: { "<array>.$[<identifier>]" : value } },
+   { arrayFilters: [ { <identifier>: <condition> } ] }
+)
+*/
+// Examples: 
+/*
+1. Update All Array Elements That Match arrayFilters
+*/
+db.students1.insertMany(
+    [
+        { "_id" : 1, "grades" : [ 95, 92, 90 ]},
+        { "_id" : 2, "grades" : [ 98, 100, 102 ]},
+        { "_id" : 3, "grades" : [ 95, 110, 100 ]}    ]);
+// Update all the elements that are >= 100 in the grades array using $[<identifier>] with the arrayFitlers
+db.students1.updateMany(
+    {},
+    {
+        $set: {"grades.$[element]": 100}    },
+    {arrayFilters: [{element: {$gte: 100}}]});
+
+db.students1.find({});
+
+/*
+2. Update All the elements That Match arrayFilters in an Array
+$[<identifier>] operator facilitates updates to arrays that contain embedded documents.
+db.collection.updateMany(
+   { <query selector> },
+   { <update operator>: { "array.$[<identifier>].field" : value } },
+   { arrayFilters: [ { <identifier>: <condition> } } ] }
+)
+*/
+db.students2.insertMany([
+   {
+      "_id" : 1,
+      "grades" : [
+         { "grade" : 80, "mean" : 75, "std" : 6 },
+         { "grade" : 85, "mean" : 90, "std" : 4 },
+         { "grade" : 85, "mean" : 85, "std" : 6 }
+      ]
+   },
+   {
+      "_id" : 2,
+      "grades" : [
+         { "grade" : 90, "mean" : 75, "std" : 6 },
+         { "grade" : 87, "mean" : 90, "std" : 3 },
+         { "grade" : 85, "mean" : 85, "std" : 4 }
+      ]
+   }
+]);
+
+db.students2.updateMany(
+    {},
+    {$set: {"grades.$[elem].mean": 100}},
+    {arrayFilters: [{"elem.grade": {$gte: 85}}]});
+
+db.students2.find({});
+
+/*
+3. Update all array elements that match mutiple conditions
+*/
+db.students3.insertMany(
+    [
+   {
+      "_id" : 1,
+      "grades" : [
+         { "grade" : 80, "mean" : 75, "std" : 6 },
+         { "grade" : 85, "mean" : 100, "std" : 4 },
+         { "grade" : 85, "mean" : 100, "std" : 6 }
+      ]
+   },
+   {
+      "_id" : 2,
+      "grades" : [
+         { "grade" : 90, "mean" : 100, "std" : 6 },
+         { "grade" : 87, "mean" : 100, "std" : 3 },
+         { "grade" : 85, "mean" : 100, "std" : 4 }
+      ]
+   }
+]);
+
+db.students3.find({});
+
+db.students3.updateMany(
+    {},
+    {$inc: {"grades.$[elem].std": -1}},
+    {arrayFilters: [{"elem.grade": {$gte: 80}, "elem.std": {$gt: 5}}]});
+
+/*
+4. Update Nested Arrays in Conjuction with $[]
+- The $[<identifier>] filtered positional operator, in conjuction with the $[] all positional operator, canbe used to update nested arrays.
+*/
+db.students4.insertOne(
+    {"_id": 1,
+      "grades": [
+      { type: "quiz", questions: [ 10, 8, 5 ] },
+        { type: "quiz", questions: [ 8, 9, 6 ] },
+        { type: "hw", questions: [ 5, 4, 3 ] },
+        { type: "exam", questions: [ 25, 10, 23, 0 ] },      ]});
+
+db.students4.find({});
+
+db.students4.updateMany(
+   {},
+   { $inc: { "grades.$[t].questions.$[score]": 2 } },
+   { arrayFilters: [ { "t.type": "quiz" }, { "score": { $gte: 8 } } ] }
+);
