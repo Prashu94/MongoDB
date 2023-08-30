@@ -128,4 +128,186 @@ db.routes.find({
     $and: [
         {$or: [{dst_airport: "SEA"}, {src_airport: "SEA"}]},
         {$or: [{"airline.name": "American Airlines"}, {"airplane": 320}]}    ]});
+// Replacing a Document in MongoDB
+/*
+To replace documents in MongoDB, we use the replaceOne() method. The replaceOne() method takes the following parameters:
+filter: A query that matches the document to replace.
+replacement: The new document to replace the old one with.
+options: An object that specifies options for the update.
+*/
+use('library');
+// Find all the data
+db.books.find({});
 
+// Find the object_id: 706 in the books collection
+db.books.find({_id: 706});
+
+db.books.replaceOne(
+    {_id: 706},
+    {
+        title: "Data Science Fundamentals for Python and MongoDB",
+        ISBN: "148235697",
+        publishedDate: new Date("2018-5-10"),
+        thumbnailURL: "https://m.media-amazon.com/images/I/71opmUBc2wL._AC_UY218_.jpg",
+        authors: ["David Paper"],
+        categories: ["Data Science"]    });
+
+/*
+Exercises replace the bird data where the common_name is Northern Cardinal
+*/
+use('bird_data');
+db.birds.find({"common_name": "Northern Cardinal"});
+
+db.birds.replaceOne(
+{_id: ObjectId("6286809e2f3fa87b7d86dccd")},   
+{
+  "common_name": "Morning Dove",
+  "scientific_name": "Zenaida macroura",
+  "wingspan_cm": 37.23,
+  "habitat": ["urban areas", "farms", "grassland"],
+  "diet": ["seeds"],
+});
+
+
+
+/*
+Updating MongoDB documents by using updateOne() 
+- The updateOne() method accepts a filter document, and update document, and an optional options object. MongoDB provides update operators
+and options to help update documents.
+$set - replaces the value of a field with the specified value
+*/
+// $set
+use('library');
+db.podcasts.insertMany([
+    {
+        title: 'The MongoDB Podcast',
+        platforms: ['Apple Podcasts', 'Spotify'],
+        year: 2022,
+        hosts: [''],
+        premium_subs: 4152,
+        downloads: 2,
+        podcast_type: 'audio'
+    }
+]);
+
+db.podcasts.updateOne(
+    {
+        _id: ObjectId("64ee14a057af6d96b2e3a4b1")    },
+    {
+        $set: {
+            subscribers: 98562        }    });
+
+db.podcasts.find({title: 'The MongoDB Podcast'});
+
+// $upsert - creates a new document if no document matches the filtered criteria
+db.podcasts.updateOne(
+    {title: 'The Developer Hub'},
+    {$set: {topics: ['databases', 'MongoDB']}});
+
+// $push - creates a new document if no documents match the filtered criteria
+db.podcasts.updateOne(
+    {_id: ObjectId("5e8f8f8f8f8f8f8f8f8f8f8")},
+     { $push: { hosts: "Nic Raboy" } });
+
+// Exercise: Update a new field titled tags and set it to an array containing the following strings: geese, herbivore and migration
+use('bird_data');
+db.birds.findOne({
+    "common_name": "Canada Goose"});
+
+db.birds.updateOne({
+    _id: ObjectId("6268413c613e55b82d7065d2")},
+{
+    $set: {tags: ["geese", "herbivore", "migration"]}}
+);
+
+
+// Exercise: Adding Values to an Array
+use('bird_data');
+db.birds.insertOne({"_id":ObjectId("6268471e613e55b82d7065d7"), "common_name":"Great Horned Owl","scientific_name":"Bubo virginianus","wingspan_cm":{"$numberDouble":"111.76"},"habitat":["grasslands","farmland","tall forest"],"diet":["mice","small mammals","rabbits","shrews"],"last_seen":{"$date":{"$numberLong":"1652991644083"}}});
+db.birds.updateOne(
+{_id: ObjectId("6268471e613e55b82d7065d7") },
+{
+    $push: {
+        diet: {
+            $each: ["newts", "opossum", "skunks", "squirrels"]        }    }});
+
+
+// Exercise: Return, Update and Add a Document
+use('bird_data');
+db.birds.find({common_name: "Robin Redbreast"});
+
+db.birds.updateOne({
+    common_name: "Robin Redbreast"},
+{
+    $inc: {
+        sightings: 1    },
+    $set: {
+        last_updated: new Date()    }},
+{
+    upsert: true}
+);
+// Importing and exporting
+/*
+mongodump --uri "mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies"
+
+mongodump --uri "mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/sample_supplies"
+mongorestore --uri “mongodb://localhost:27017/sample_supplies” —drop dump
+mongorestore --drop dump/
+
+mongodump --uri "mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/sample_airbnb"
+mongorestore --uri “mongodb://localhost:27017/sample_airbnb” —drop dump
+mongorestore --drop dump/
+
+mongodump --uri "mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/sample_analytics"
+mongorestore --uri “mongodb://localhost:27017/sample_analytics” —drop dump
+mongorestore --drop dump/
+
+mongodump --uri "mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/sample_geospatial"
+mongorestore --uri “mongodb://localhost:27017/sample_geospatial” —drop dump
+mongorestore --drop dump/
+
+mongodump --uri "mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/sample_guides"
+mongorestore --uri “mongodb://localhost:27017/sample_guides” —drop dump
+mongorestore --drop dump/
+
+mongodump --uri "mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/sample_mflix"
+mongorestore --uri “mongodb://localhost:27017/sample_mflix” —drop dump
+mongorestore --drop dump/
+
+mongodump --uri "mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/sample_restaurants"
+mongorestore --uri “mongodb://localhost:27017/sample_restraunts” —drop dump
+mongorestore --drop dump/
+
+mongodump --uri "mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/sample_supplies"
+mongorestore --uri “mongodb://localhost:27017/sample_supplies” —drop dump
+mongorestore --drop dump/
+
+mongodump --uri "mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/sample_training"
+mongorestore --uri “mongodb://localhost:27017/sample_training” —drop dump
+mongorestore --drop dump/
+
+mongodump --uri "mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/sample_weatherdata"
+mongorestore --uri “mongodb://localhost:27017/sample_weatherdata” —drop dump
+mongorestore --drop dump/
+
+mongoexport --uri="mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies" --collection=sales --out=sales.json
+
+mongorestore --uri "mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies"  --drop dump
+
+mongoimport --uri="mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies" --drop sales.json*/
+
+/** Documentations to refer
+Inserting Documents
+MongoDB Docs: insertOne()
+MongoDB Docs: insertMany()
+Finding Documents
+MongoDB Docs: find()
+MongoDB Docs: $in
+Finding Documents using comparison operator
+MongoDB Docs: Comparison Operators
+Querying an Array Elements
+MongoDB Docs: $elemMatch
+MongoDB Docs: Querying Arrays
+Finding Documents Using Logical Operators
+MongoDB Docs: Logical Operators
+*/
