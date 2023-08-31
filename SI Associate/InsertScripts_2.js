@@ -1,4 +1,5 @@
 use('bird_data');
+db.birds.drop();
 db.birds.insertMany(
 [{"_id":ObjectId("626845c4613e55b82d7065d5"), "common_name":"Sanderling","scientific_name":"Calidris alba","wingspan_cm":{"$numberDouble":"43.18"},"habitat":"wetlands","diet":["crustaceans","oceanic invertebrates"],"last_seen":{"$date":{"$numberLong":"1652991644083"}}},
 {"_id":ObjectId("62684d24613e55b82d7065d9"), "common_name":"Palm Warbler","scientific_name":"Setaphaga palmarum","wingspan_cm":{"$numberDouble":"20.32"},"habitat":"field","diet":["insects","seeds","berries"],"last_seen":{"$date":{"$numberLong":"1652991644083"}}},

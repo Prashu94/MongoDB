@@ -246,6 +246,60 @@ db.birds.updateOne({
 {
     upsert: true}
 );
+
+/*
+Updating MongoDB Documents by Using findAndModify()
+- used to find and replace a single document in MongoDB. It accepts a filter document, a replacement document, and an optional options object.
+*/
+use('library');
+db.podcasts.findAndModify({
+    query: {_id: ObjectId("6261a92dfee1ff300dc80bf1")},
+    update: {$in: {subscribers: 1}},
+    new: true});
+
+// Exercise
+use('bird_data');
+db.birds.find({common_name: "Blue Jay"});
+db.birds.findAndModify(
+    {
+        query: {common_name: "Blue Jay"},
+        update: {$inc: {sightings_count: 1}},
+        new:true    });
+
+// Update the documents using updateMany()
+// To update multiple documents use the updateMany() method. This method accepts a filter document, an update document, and an optional options object
+use('library');
+db.books.updateMany(    {publishedDate: {$lt: new Date("2019-01-02")}},
+    {$set: {status: "LEGACY"}}
+);
+
+// Exercise - Updating Multiple Documents
+use('bird_data');
+db.birds.updateMany(
+    {common_name: {$in: ["Blue Jay", "Grackle"]} },
+    {$set: {last_seen: new Date("2022-01-01")}});
+db.birds.find({common_name: {$in: ["Blue Jay", "Grackle"]}});
+
+
+/*
+Sorting and Limiting Query Results in MongoDB
+Syntax:
+db.collection.find(<query>).sort(<sort>)
+*/
+// Example:
+// Return data on all music companies, sorted alphabetically from A to Z.
+use('sample_training');
+db.companies.find({category_code: "music"}).sort({name: 1});
+// To ensure documents are returned in a consistent order we should sort by _id field also
+db.companies.find({category_code: "music"}).sort({name: 1, _id:1});
+
+// Exercises - Return Query Results in Ascending order
+use('sample_supplies');
+// Return the data on all sales, ordered by date from oldest to newest
+db.sales.findOne(
+    {});
+db.sales.find({}).sort({sale_date: -1});
+
 // Importing and exporting
 /*
 mongodump --uri "mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies"
@@ -292,9 +346,18 @@ mongorestore --drop dump/
 
 mongoexport --uri="mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies" --collection=sales --out=sales.json
 
+mongoexport --uri="mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/bird_data" --collection=birds --out=sales.json
+
 mongorestore --uri "mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies"  --drop dump
 
-mongoimport --uri="mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies" --drop sales.json*/
+mongoimport --uri="mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies" --drop sales.json
+
+mongoimport --uri="mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/bird_data" --collection=birds --drop bird_data.birds.json
+mongoimport --uri="mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/bird_data" --collection=sightings --drop bird_data.sightings.json
+mongoimport --uri="mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/library" --collection=books --drop library.books.json
+mongoimport --uri="mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/bank" --collection=accounts --drop bank.accounts.json
+mongoimport --uri="mongodb+srv://prashant94:Mt3e4GCEx6F4rwgT@cluster0.u2huctx.mongodb.net/bank" --collection=transfers --drop bank.transfers.json
+*/
 
 /** Documentations to refer
 Inserting Documents
@@ -310,4 +373,13 @@ MongoDB Docs: $elemMatch
 MongoDB Docs: Querying Arrays
 Finding Documents Using Logical Operators
 MongoDB Docs: Logical Operators
+MongoDB Docs: replaceOne()
+MongoDB Docs: Update Operators
+MongoDB Docs: $set
+MongoDB Docs: $push
+MongoDB Docs: upsert
+MongoDB Docs: findAndModify()
+MongoDB Docs: updateMany()
+MongoDB Docs: deleteOne()
+MongoDB Docs: deleteMany()
 */
