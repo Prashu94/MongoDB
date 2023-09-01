@@ -300,6 +300,49 @@ db.sales.findOne(
     {});
 db.sales.find({}).sort({sale_date: -1});
 
+db.sales.find({}).sort({sale_date: 1});
+
+db.sales.find({ purchaseMethod: "Online", couponUsed: true}).sort({ saleDate: -1 });
+
+use('sample_training');
+
+db.inspections.find({result: "Pass"}).sort({certificate_number: 1});
+
+use('sample_training');
+// Trips taken by subscribers
+db.trips.find({usertype: "Subscriber"}).sort({tripDuration: -1}).limit(5);
+
+/*
+Returning Specific Data from a Query in MongoDB
+1. Add a Projection Document
+- To specify fields to include or exclude in the result set, add a projection document as a second parameter in the call to
+db.collection.find()
+Syntax:
+db.collection.find(<query>, <projection>)
+
+Include a field - To include a field, set its value to 1 in the projection document
+Syntax:
+db.collection.find(<query>, {<field>:1})
+
+Exclude a field - To exclude a field, set its value to 0 in the projection document
+Syntax:
+db.collection.find(query, {<field>:0, <field>:0})
+
+*/
+// Example: Return all restraunt inspections - business name, result, and _id fields only
+use('sample_training');
+db.inspections.find(
+    {sector: "Restaurant - 818"},
+    {business_name: 1, result: 1});
+
+// Example: Return all inspections with result of "Pass" or "Warning" - exclude date and zip code
+db.inspections.find(
+    {result: {$in: ["Pass", "Warning"]}},
+    {date: 0, "address.zip": 0});
+
+
+
+
 // Importing and exporting
 /*
 mongodump --uri "mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies"
