@@ -340,6 +340,54 @@ db.inspections.find(
     {result: {$in: ["Pass", "Warning"]}},
     {date: 0, "address.zip": 0});
 
+// Exercises: Return Selected fields, Including the _id field.
+use('sample_supplies');
+// Query all sales at Denver store. Return only the sale date, store location, purchase_method and _id fields.
+db.sales.find({storeLocation: "Denver"}, {_id: 1, purchaseMethod: 1, storeLocation: 1, saleDate: 1});
+// Exercises: Return Selected Fields, Excluding the _id field
+// Query to find the data on sales to customers less than 30 years old in which the customer statisfication rating was
+// greater than 3 . Return only the customer's age and satisfaction rating, the sale date and store location. Do not include
+// the _id field.
+db.sales.find({
+    "customer.age": {$lt: 30},
+    "customer.satisfaction": {$gt: 3}}, { "customer.satisfaction": 1, "customer.age": 1, "storeLocation": 1, "saleDate": 1, "_id": 0, });
+// Exercises: Return All Fields Except Those Explicitly Excluded
+// Find data on sales from the Seatlle and New York stores. Return all data except the purchase method, 
+// customer information and whether a coupon was used.
+db.sales.find({storeLocation: {$in: ["New York", "Seattle"]}}, {saleDate: 0});
+
+/*
+Counting Documents in a MongoDB Collection
+1. Count Documents
+- Use db.collection.countDocuments() to count the number of the documents that match a query. countDocuments() takes 2 parameters: 
+a query document and an options document.
+Syntax: 
+db.collection.countDocuments(<query>, <options>)
+The query selects the documents to be counted.
+
+// Examples:
+1. Count number of documents in the trip collection
+2. Count the number of trips over 120 minutes by subscribers
+*/
+use('sample_training');
+db.trips.countDocuments();
+db.trips.countDocuments({ tripduration: { $gt: 120 }, usertype: "Subscriber" });
+
+// Exercise: Count all the documents in the collection
+/*
+    Find the total number of documents in the sales collction.
+*/
+use('sample_supplies');
+db.sales.countDocuments();
+/*
+    Find the number of sales made using a coupon at the Denver location.
+*/
+db.sales.countDocuments({storeLocation: "Denver"});
+/*
+    Find the number of sales that included a laptop that cost less than $600
+*/
+db.sales.countDocuments({ items: { $elemMatch: { name: "laptop", price: { $lt: 600 } } } } );
+
 
 
 
@@ -425,4 +473,9 @@ MongoDB Docs: findAndModify()
 MongoDB Docs: updateMany()
 MongoDB Docs: deleteOne()
 MongoDB Docs: deleteMany()
+MongoDB Docs: cursor.sort()
+MongoDB Docs: cursor.limit()
+MongoDB Docs: Project Fields to Return from Query
+MongoDB Docs: Projection Restrictions
+MongoDB Docs: db.collection.countDocuments()
 */
