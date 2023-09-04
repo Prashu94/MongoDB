@@ -101,3 +101,133 @@ db.sightings.aggregate([
     $limit: 4
   }
 ]);
+
+/*
+Using $project $count and $set Stages in a MongoDB Aggregation Pipeline
+1. $project: stage specifies the fields of the output documents. 1 means that the field should be included, and 0 means
+that the field should be supressed. The field can also be assigned a new value
+{
+    $project: {
+        state: 1,
+        zip: 1, 
+        population: "$pop",
+        _id: 0
+    }
+}
+
+2. $set: stage creates new fields or changes the value of existing fields, and then outputs the documents with the new fields.
+{
+    $set: {
+        place: {
+            $concat: ["$city", ",", "$state"]
+        },
+        pop: 1000
+    }
+}
+
+$count: stage creates a new document, with the number of documents at that stage in the aggregation pipeline assigned 
+to the specified name.
+{
+    $count: "total_zips"
+}
+*/
+// Exercise: In the database bird_data with a collection of sightings return only the time of sighting and common name of the bird 
+// that was sighted
+use('bird_data');
+db.sightings.aggregate([
+{$match: {}},
+{$project: {
+    "date":1,
+    "species_common": 1,
+    _id: 0}}
+]);
+
+// Exercise: In the database bird_data with collection bird, add a class field and set that field to bird in all of the existing 
+// documents in the collection
+use('bird_data');
+db.birds.aggregate([
+    {
+        $set: {
+            'class': 'bird'        }    }]);
+
+// Exercise: We have a database called bird_data with a collection sightings. We want to see the total number 
+// of sightings of Eastern Bluebirds in 2022
+use('bird_data');
+db.sightings.aggregate([
+{
+  $match: {
+    date: {
+      $gt: ISODate('2022-01-01T00:00:00.000Z'),
+      $lt: ISODate('2023-01-01T00:00:00.000Z')
+    },
+    species_common: 'Eastern Bluebird'
+  }
+}, {
+  $count: 'bluebird_sightings_2022'
+}
+]);
+
+/*
+$out: stage to output the value to other collection
+*/
+use('bird_data');
+db.sightings.aggregate([
+    {
+        $match: {
+            date: {
+                $gte: ISODate('2022-01-01T00:00:00.0Z'),
+                $lt: ISODate('2023-01-01T00:00:00.0Z')            }                }    },
+    {
+        $out: 'sightings_2022'    }
+]);
+
+db.sightings_2022.findOne();
+
+/*
+MongoDB Aggregation
+In this unit, you learned how to use aggregation in MongoDB and create an aggregation pipeline. You also learned how to use several of the most common aggregation stages, including:
+
+$match
+
+$group
+
+$sort
+
+$limit
+
+$project
+
+$count
+
+$set
+
+$out
+
+Resources
+Use the following resources to learn more about inserting and finding documents in MongoDB:
+
+Lesson 01: Introduction to MongoDB Aggregation
+MongoDB Docs: Aggregation Operations
+
+MongoDB Docs: Aggregation Pipelines
+
+Lesson 02: Using $match and $group Stages in a MongoDB Aggregation Pipeline
+MongoDB Docs: $match
+
+MongoDB Docs: $group
+
+Lesson 03: Using $sort and $limit Stages in a MongoDB Aggregation Pipeline
+MongoDB Docs: $sort
+
+MongoDB Docs: $limit
+
+Lesson 04: Using $project, $count, and $set Stages in a MongoDB Aggregation Pipeline
+MongoDB Docs: $project
+
+MongoDB Docs: $count
+
+MongoDB Docs: $set
+
+Lesson 05: Using $out Stage in a MongoDB Aggregation Pipeline
+MongoDB Docs: $out
+*/
